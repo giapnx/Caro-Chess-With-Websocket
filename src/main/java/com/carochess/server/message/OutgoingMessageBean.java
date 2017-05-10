@@ -1,4 +1,4 @@
-package com.tictactoe.server.message;
+package com.carochess.server.message;
 
 /**
  * Represents response message

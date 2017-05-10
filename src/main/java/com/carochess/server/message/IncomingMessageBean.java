@@ -1,4 +1,4 @@
-package com.tictactoe.server.message;
+package com.carochess.server.message;
 
 /**
  * Represents incoming message from the user
@@ -6,7 +6,7 @@ package com.tictactoe.server.message;
  */
 public class IncomingMessageBean {
 	
-        private int gameId;
+    private int gameId;
 	private String player;
 	private String gridId;
 	

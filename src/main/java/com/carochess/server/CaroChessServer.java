@@ -1,10 +1,14 @@
-package com.tictactoe.server;
+package com.carochess.server;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.concurrent.Executors;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.jboss.netty.util.HashedWheelTimer;
+import org.jboss.netty.util.Timer;
 
 /* * A HTTP server which serves Web Socket requests at:
  * 
@@ -23,7 +27,7 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
   * <li>Firefox 7+ (draft-ietf-hybi-thewebsocketprotocol-10)
   * </ul>
   */
-public class TicTacToeServer {
+public class CaroChessServer {
 
     public static void main(String[] args) throws Exception {
         ChannelFactory factory =
@@ -32,14 +36,20 @@ public class TicTacToeServer {
                     Executors.newCachedThreadPool());
 
         ServerBootstrap bootstrap = new ServerBootstrap(factory);
-
-        bootstrap.setPipelineFactory(new WebSocketServerPipelineFactory());
+        Timer timer = new HashedWheelTimer();
+        
+        bootstrap.setPipelineFactory(new WebSocketServerPipelineFactory(timer));
 
         bootstrap.setOption("child.tcpNoDelay", true);
         bootstrap.setOption("child.keepAlive", true);
 
-        bootstrap.bind(new InetSocketAddress("192.168.0.104", 9000));
+//        bootstrap.bind(new InetSocketAddress("10.11.167.31", 9000));
+        SocketAddress socketAddress = new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), 9000);
+        bootstrap.bind(socketAddress);
+        System.out.println("CaroChess Server: "+socketAddress);
         
-        System.out.println("TicTacToe Server: Listening on port 9000");
+//        bootstrap.bind(new InetSocketAddress("192.168.0.110", 9000));
+        
+
     }
 }

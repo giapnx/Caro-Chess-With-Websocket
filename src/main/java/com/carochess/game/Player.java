@@ -1,7 +1,8 @@
-package com.tictactoe.game;
+package com.carochess.game;
 
-import com.tictactoe.game.Game.PlayerLetter;
 import org.jboss.netty.channel.Channel;
+
+import com.carochess.game.Game.PlayerLetter;
 
 /**
  * Represents a player for a game of Tic Tac Toe.

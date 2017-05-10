@@ -1,24 +1,26 @@
-package com.tictactoe.game;
+package com.carochess.game;
 
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * Represents a game of Tic Tac Toe. Contains players and a game board.
+ * Represents a game of Caro Chess. Contains players and a game board.
  * 
  */
 public class Game {
 	
-	private static int GAME_COUNT = 0;
+	private static int GAME_COUNT = 1;
 	
 	public enum Status {
 	    WAITING, IN_PROGRESS, WON, TIED
 	}
 	
 	public enum PlayerLetter { 
-		X, O 
+		X, O
 	}
+	
+	public int[] scores; 
 	
 	// The game ID. The server increments this count with each new game initiated.
 	private final int id;
@@ -35,6 +37,28 @@ public class Game {
 		this.board = new GameBoard();
 		status = Status.WAITING;
 		players = new EnumMap<PlayerLetter, Player>(PlayerLetter.class);
+		scores = new int[]{0,0};	// score[0] ~ X, score[1] ~ O
+	}
+	
+	/**
+	 * Reset Game when one of two player win.
+	 */
+	public void resetGame()
+	{
+		status = Status.IN_PROGRESS;
+		board.resetBoardGame();
+	}
+	
+	/**
+	 * Increment score of player win
+	 */
+	protected void incrementScoreOf(PlayerLetter playerLetter)
+	{
+		if (playerLetter == PlayerLetter.X) {
+			scores[0]++;
+		} else {
+			scores[1]++;
+		}
 	}
 	
 	/**

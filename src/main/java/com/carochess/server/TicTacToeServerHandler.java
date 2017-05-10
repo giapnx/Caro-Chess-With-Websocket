@@ -1,20 +1,23 @@
-package com.tictactoe.server;
+package com.carochess.server;
 
-import static com.tictactoe.server.message.GameOverMessageBean.Result.TIED;
-import static com.tictactoe.server.message.GameOverMessageBean.Result.YOU_WIN;
-import static com.tictactoe.server.message.TurnMessageBean.Turn.WAITING;
-import static com.tictactoe.server.message.TurnMessageBean.Turn.YOUR_TURN;
+import static com.carochess.server.message.GameOverMessageBean.Result.TIED;
+import static com.carochess.server.message.GameOverMessageBean.Result.YOU_WIN;
+import static com.carochess.server.message.TurnMessageBean.Turn.WAITING;
+import static com.carochess.server.message.TurnMessageBean.Turn.YOUR_TURN;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.isKeepAlive;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -24,29 +27,30 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.util.CharsetUtil;
 
+import com.carochess.game.Game;
+import com.carochess.game.Player;
+import com.carochess.game.Game.PlayerLetter;
+import com.carochess.server.message.GameOverMessageBean;
+import com.carochess.server.message.HandshakeMessageBean;
+import com.carochess.server.message.IncomingMessageBean;
+import com.carochess.server.message.OutgoingMessageBean;
+import com.carochess.server.message.TurnMessageBean;
 import com.google.gson.Gson;
-import com.tictactoe.game.Game;
-import com.tictactoe.game.Game.PlayerLetter;
-import com.tictactoe.game.Player;
-import com.tictactoe.server.message.GameOverMessageBean;
-import com.tictactoe.server.message.HandshakeMessageBean;
-import com.tictactoe.server.message.IncomingMessageBean;
-import com.tictactoe.server.message.OutgoingMessageBean;
-import com.tictactoe.server.message.TurnMessageBean;
+
 import org.jboss.netty.handler.codec.http.websocketx.*;
 
 /**
- * Handles a server-side channel for a multiplayer game of Tic Tac Toe.
- * 
- * 
+ * Handles a server-side channel for a multiplayer game of Caro Chess.
  */
 public class TicTacToeServerHandler extends SimpleChannelUpstreamHandler {
 
 	static Map<Integer, Game> games = new HashMap<Integer, Game>();
+	static Map<String, Channel> users = new HashMap<String, Channel>();
 
 	private static final String WEBSOCKET_PATH = "/websocket";
         
-        private WebSocketServerHandshaker handshaker;
+    private WebSocketServerHandshaker handshaker;
+    private static ChannelGroup playerGroup;
 
 	/* (non-Javadoc)
 	 * 
@@ -55,8 +59,8 @@ public class TicTacToeServerHandler extends SimpleChannelUpstreamHandler {
 	 * - A player navigates to the page. The initial page load triggers an HttpRequest. We perform the WebSocket handshake 
 	 * 		and assign them to a particular game.
 	 * 
-	 * - OR A player clicks on a tic tac toe square. The message contains who clicked 
-	 * 		on which square (1 thru 9) and which game they're playing.
+	 * - OR A player clicks on a caro chess square. The message contains who clicked 
+	 * 		on which square and which game they're playing.
 	 */
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
@@ -68,6 +72,29 @@ public class TicTacToeServerHandler extends SimpleChannelUpstreamHandler {
 			handleWebSocketFrame(ctx, (WebSocketFrame) msg);
 		}
 	}
+	
+	@Override
+	public void channelBound(ChannelHandlerContext ctx, ChannelStateEvent e) {
+	    System.out.println("Bound: " + e.getChannel());
+	}
+
+	@Override
+	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
+	    System.out.println("Connected: " + e.getChannel().getRemoteAddress());
+//	    playerGroup.add(e.getChannel());
+//	    System.out.println("player group: "+playerGroup.size());
+	}
+
+	@Override
+	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) {
+	    System.out.println("Closed: " + e.getChannel().getRemoteAddress());
+	}
+
+	@Override
+	public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
+	    System.out.println("Disconnected: " + e.getChannel().getRemoteAddress());
+	}
+	
 
 	/**
 	 * Handles all HttpRequests. Must be a GET. Performs the WebSocket handshake 
@@ -119,7 +146,7 @@ public class TicTacToeServerHandler extends SimpleChannelUpstreamHandler {
 		games.put(game.getId(), game);
 		
 		// Send confirmation message to player with game ID and their assigned letter (X or O) 
-		ctx.getChannel().write(new TextWebSocketFrame(new HandshakeMessageBean(game.getId(), letter.toString()).toJson()));
+		ctx.getChannel().write(new TextWebSocketFrame(new HandshakeMessageBean(game.getId(), letter.toString(), 0).toJson()));
 		
 		// If the game has begun we need to inform the players. Send them a "turn" message (either "waiting" or "your_turn")
 		if (game.getStatus() == Game.Status.IN_PROGRESS) {			
@@ -140,7 +167,7 @@ public class TicTacToeServerHandler extends SimpleChannelUpstreamHandler {
 			if (g.getStatus().equals(Game.Status.WAITING)) {
 				return g;
 			}
-                }		
+        }
 		// Or return a new game
 		return new Game();
 	}
@@ -152,10 +179,9 @@ public class TicTacToeServerHandler extends SimpleChannelUpstreamHandler {
 	 * @param ctx
 	 * @param frame
 	 */
-	private void handleWebSocketFrame(ChannelHandlerContext ctx,
-			WebSocketFrame frame) {
-            
-                   // Check for closing frame
+	private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) 
+	{        
+       // Check for closing frame
          if (frame instanceof CloseWebSocketFrame) {
              this.handshaker.close(ctx.getChannel(), (CloseWebSocketFrame) frame);
              return;
@@ -166,10 +192,11 @@ public class TicTacToeServerHandler extends SimpleChannelUpstreamHandler {
              throw new UnsupportedOperationException(String.format("%s frame types not supported", frame.getClass()
                      .getName()));
          }
-		
+		System.out.println(((TextWebSocketFrame) frame).getText());
+         
 		Gson gson = new Gson();
 		IncomingMessageBean message = gson.fromJson(((TextWebSocketFrame) frame).getText(), IncomingMessageBean.class);
-		
+//		System.out.println(message.getGameId() + " | "+message.getPlayer()+" | "+message.getGridId());
 		Game game = games.get(message.getGameId());
 		Player opponent = game.getOpponent(message.getPlayer());
 		Player player = game.getPlayer(PlayerLetter.valueOf(message.getPlayer()));
@@ -188,6 +215,10 @@ public class TicTacToeServerHandler extends SimpleChannelUpstreamHandler {
 		// Respond to the player to let them know they won.
 		if (winner) {
 			player.getChannel().write(new TextWebSocketFrame(new GameOverMessageBean(YOU_WIN).toJson()));
+			
+			// Reset status and board game, start a new game
+			game.resetGame();
+			
 		} else if (tied) {
 			player.getChannel().write(new TextWebSocketFrame(new GameOverMessageBean(TIED).toJson()));
 		}

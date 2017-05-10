@@ -13,14 +13,22 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.tictactoe.server;
+package com.carochess.server;
 
 import static org.jboss.netty.channel.Channels.pipeline;
+
+import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
+import org.jboss.netty.handler.timeout.ReadTimeoutException;
+import org.jboss.netty.handler.timeout.ReadTimeoutHandler;
+import org.jboss.netty.util.Timer;
 
 
 /**
@@ -28,6 +36,13 @@ import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
  * 
  */
 public class WebSocketServerPipelineFactory implements ChannelPipelineFactory {
+	
+	private final Timer timer;
+	
+	public WebSocketServerPipelineFactory(Timer timer) {
+		this.timer = timer;
+	}
+	
     @Override
 	public ChannelPipeline getPipeline() throws Exception {
 		// Create a default pipeline implementation.
@@ -36,6 +51,15 @@ public class WebSocketServerPipelineFactory implements ChannelPipelineFactory {
 		pipeline.addLast("aggregator", new HttpChunkAggregator(65536));
 		pipeline.addLast("encoder", new HttpResponseEncoder());
 		pipeline.addLast("handler", new TicTacToeServerHandler());
+//		pipeline.addLast("readTimeoutHandler", new ReadTimeoutHandler(timer, 30));
+        pipeline.addLast("myHandler", new MyHandlerTimeout());
 		return pipeline;
 	}
+}
+
+//Handler should handle the ReadTimeoutException.
+class MyHandlerTimeout extends SimpleChannelUpstreamHandler {
+	
+	
+	
 }
