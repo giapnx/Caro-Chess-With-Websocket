@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class SocketMgr : MonoBehaviour {
+
+	public InputField RemoteInput;
 
 	public static SocketMgr instance;
 
@@ -29,7 +32,8 @@ public class SocketMgr : MonoBehaviour {
 	}
 
 	IEnumerator StartWebSocketCorou () {
-		ws = new WebSocket(new Uri("ws://192.168.0.104:9000/websocket"));
+//		ws = new WebSocket(new Uri("ws://192.168.0.104:9000/websocket"));
+		ws = new WebSocket(new Uri("ws://"+RemoteInput.text+":9000/websocket"));
 		yield return StartCoroutine(ws.Connect());
 
 		UIManager.Instance.ShowPage ("MainMenuPanel");
