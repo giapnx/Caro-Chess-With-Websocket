@@ -50,7 +50,7 @@ public class WebSocketServerPipelineFactory implements ChannelPipelineFactory {
 		pipeline.addLast("decoder", new HttpRequestDecoder());
 		pipeline.addLast("aggregator", new HttpChunkAggregator(65536));
 		pipeline.addLast("encoder", new HttpResponseEncoder());
-		pipeline.addLast("handler", new TicTacToeServerHandler());
+		pipeline.addLast("handler", new CaroChessServerHandler());
 //		pipeline.addLast("readTimeoutHandler", new ReadTimeoutHandler(timer, 30));
         pipeline.addLast("myHandler", new MyHandlerTimeout());
 		return pipeline;

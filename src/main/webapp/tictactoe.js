@@ -31,7 +31,7 @@ var MESSAGE_GAME_OVER_TIED = "TIED";
 
 // Constants - WebSocket URL
 // var WEBSOCKET_URL = "ws://192.168.1.72:9000/websocket";
-var WEBSOCKET_URL = "ws://192.168.0.110:9000/websocket";
+var WEBSOCKET_URL = "ws://192.168.0.104:9000/websocket";
 
 // Variables
 var player;

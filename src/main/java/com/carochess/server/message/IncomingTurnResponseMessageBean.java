@@ -4,11 +4,11 @@ package com.carochess.server.message;
  * Represents incoming message from the user
  * @author lukasz madon
  */
-public class IncomingMessageBean {
+public class IncomingTurnResponseMessageBean {
 	
     private int gameId;
 	private String player;
-	private String gridId;
+	private int gridId;
 	
 	public int getGameId() {
 		return gameId;
@@ -22,13 +22,13 @@ public class IncomingMessageBean {
 	public void setPlayer(String player) {
 		this.player = player;
 	}
-	public String getGridId() {
+	public int getGridId() {
 		return gridId;
 	}
-	public void setGridId(String gridId) {
+	public void setGridId(int gridId) {
 		this.gridId = gridId;
 	}
-	public int getGridIdAsInt() {
-		return Integer.valueOf(gridId.substring(5));
-	}
+//	public int getGridIdAsInt() {
+//		return Integer.valueOf(gridId.substring(5));
+//	}
 }

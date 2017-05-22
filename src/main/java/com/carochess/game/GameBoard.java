@@ -9,7 +9,7 @@ import com.carochess.game.Game.PlayerLetter;
 public class GameBoard {
 	
 	public static final int MAX_ROW = 15;
-	public static final int MAX_COL = 15;
+	public static final int MAX_COL = 17;
 	
 	PlayerLetter[][] cells = new PlayerLetter[MAX_ROW][MAX_COL];
 	
@@ -45,6 +45,9 @@ public class GameBoard {
 		{
 			for (int j = 0; j < MAX_COL; j++) 
 			{
+//				System.out.print(" | "+cells[i][j]);
+//				if(j == MAX_COL - 1)
+//					System.out.println("\n");
 				if(cells[i][j] == null || cells[i][j] != player) continue;
 				
 				if(i <= MAX_ROW - 5)

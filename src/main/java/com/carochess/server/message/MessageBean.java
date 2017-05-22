@@ -7,6 +7,8 @@ import com.google.gson.Gson;
  * @author lukasz madon
  */
 public class MessageBean {
+	
+	public String type;
 
 	public String toJson() {
 		Gson gson = new Gson();

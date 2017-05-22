@@ -6,14 +6,11 @@ package com.carochess.server.message;
  */
 public class TurnMessageBean extends MessageBean {
 	
-	public enum Turn {
-		WAITING, YOUR_TURN
-	}
 	
 	private final String type = "turn";
-	private Turn turn;
+	private String turn;
 
-	public TurnMessageBean(Turn t) {
+	public TurnMessageBean(String t) {
 		turn = t;
 	}
 
@@ -21,7 +18,7 @@ public class TurnMessageBean extends MessageBean {
 		return type;
 	}
 	
-	public Turn getTurn() {
+	public String getTurn() {
 		return turn;
 	}	
 	
