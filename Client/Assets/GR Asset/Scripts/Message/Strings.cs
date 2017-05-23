@@ -20,4 +20,7 @@ public class Strings {
 	// Create status
 	public const string CREATE_SUCCESS 	= "create_success";
 	public const string CREATE_FAIL 	= "create_fail";
+
+	// message
+	public const string EXIT_MSG 	= "The opponent has left the game. Press the OK button to return to MainMenu";
 }

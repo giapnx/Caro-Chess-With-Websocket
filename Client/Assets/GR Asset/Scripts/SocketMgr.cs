@@ -159,6 +159,12 @@ public class SocketMgr : MonoBehaviour {
 
 					break;
 
+				case GR_MessageType.EXIT_GAME:
+
+					NotificationPanel.instance.SetTextNotification (Strings.EXIT_MSG);
+					UIManager.Instance.ShowPage ("NotifycationPanel");
+					break;
+
 				default:
 					break;
 				}

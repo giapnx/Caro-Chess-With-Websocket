@@ -12,5 +12,5 @@ public class MessageType {
 	public static final String TURN 		= "turn";
 	public static final String RESPONSE 	= "response";
 	public static final String GAMEOVER 	= "game_over";
-	public static final String YOU_WIN 		= "you_win";
+	public static final String EXIT_GAME 	= "exit_game";
 }

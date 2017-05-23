@@ -10,6 +10,7 @@ public class GR_MessageType : MonoBehaviour {
 	public const string JOIN_ROOM 	= "join_room";
 	public const string TURN 		= "turn";
 	public const string GAMEOVER 	= "game_over";
+	public const string EXIT_GAME 	= "exit_game";
 
 	// Outgoing
 	public const string CREATE_ROOM	= "create_room";

@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import javax.enterprise.inject.New;
+import javax.persistence.criteria.CriteriaBuilder.Case;
+
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -326,6 +329,21 @@ public class CaroChessServerHandler extends SimpleChannelUpstreamHandler {
 			} else if (tied) {
 				player.getChannel().write(new TextWebSocketFrame(new GameOverMessageBean(Strings.TIED).toJson()));
 			}
+			
+			break;
+			
+		case MessageType.EXIT_GAME:
+			
+			IncomingExitGameMessageBean exit_message = gson.fromJson(((BinaryWebSocketFrame) frame).getBinaryData().toString(CharsetUtil.UTF_8), IncomingExitGameMessageBean.class);
+			// Find other Player in game and notify
+			Player opponentPlayer = games.get(exit_message.getGameId()).getOpponent(exit_message.getPlayer());
+			
+			MessageBean msg = new MessageBean();
+			msg.type = MessageType.EXIT_GAME;
+			opponentPlayer.getChannel().write(new TextWebSocketFrame(msg.toJson()));
+			
+			// Deleta this game
+			games.remove(exit_message.getGameId());
 			
 			break;
 
