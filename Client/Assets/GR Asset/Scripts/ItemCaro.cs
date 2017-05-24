@@ -36,6 +36,7 @@ public class ItemCaro : MonoBehaviour {
 			SocketMgr.instance.Send (outMess);
 
 			BoardGameMgr.instance.isPlayerTurn = false;
+			RoomInfoMgr.instance.SetTurnStatus (false);
 		}
 
 	}

@@ -24,9 +24,30 @@ public class RoomInfoMgr : MonoBehaviour {
 	public int oppoScore = 0;
 
 
+	// Turn notify
+	Color32 colorX, colorO;
+	public GameObject PlayerTurnNotify, EnemyTurnNotify;
+	private Animator playerTurnAnim, enemyTurnAnim;
+
+
 	void Awake()
 	{
 		instance = this;
+	}
+
+	void Start()
+	{
+		colorX = new Color32 (0,255,0,255);
+		colorO = new Color32 (255,255,0,255);
+
+		playerTurnAnim = PlayerTurnNotify.GetComponent <Animator> ();
+		enemyTurnAnim = EnemyTurnNotify.GetComponent <Animator> ();
+	}
+
+	public void SetTurnStatus(bool isPlayerTurn)
+	{
+		playerTurnAnim.SetBool ("isTurn", isPlayerTurn);
+		enemyTurnAnim.SetBool ("isTurn", !isPlayerTurn);
 	}
 
 	public void SetStatusPlayer(int score)

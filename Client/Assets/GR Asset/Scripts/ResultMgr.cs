@@ -15,4 +15,11 @@ public class ResultMgr : MonoBehaviour {
 	{
 		BoardGameInstance.ResetBoardGame ();
 	}
+
+	public void BackToMenu()
+	{
+		OutgoingExitGameMessage outMsg = new OutgoingExitGameMessage (BoardGameInstance.gameId, BoardGameInstance.player);
+
+		SocketMgr.instance.Send (outMsg);
+	}
 }

@@ -116,7 +116,8 @@ public class SocketMgr : MonoBehaviour {
 						BoardGameInstance.isPlayerTurn = true;
 					else
 						BoardGameInstance.isPlayerTurn = false;
-					
+
+					RoomInfoInstance.SetTurnStatus (BoardGameInstance.isPlayerTurn);
 					break;
 
 				case GR_MessageType.TURN_RESPONSE:
@@ -126,6 +127,7 @@ public class SocketMgr : MonoBehaviour {
 					if(!incomingMessage.winner)
 					{
 						BoardGameInstance.isPlayerTurn = true;
+						RoomInfoInstance.SetTurnStatus (BoardGameInstance.isPlayerTurn);
 					}
 					else
 					{
@@ -161,6 +163,7 @@ public class SocketMgr : MonoBehaviour {
 
 				case GR_MessageType.EXIT_GAME:
 
+					print ("Exit Game");
 					NotificationPanel.instance.SetTextNotification (Strings.EXIT_MSG);
 					UIManager.Instance.ShowPage ("NotifycationPanel");
 					break;

@@ -333,7 +333,7 @@ public class CaroChessServerHandler extends SimpleChannelUpstreamHandler {
 			break;
 			
 		case MessageType.EXIT_GAME:
-			
+			System.out.println("Exit game");
 			IncomingExitGameMessageBean exit_message = gson.fromJson(((BinaryWebSocketFrame) frame).getBinaryData().toString(CharsetUtil.UTF_8), IncomingExitGameMessageBean.class);
 			// Find other Player in game and notify
 			Player opponentPlayer = games.get(exit_message.getGameId()).getOpponent(exit_message.getPlayer());
