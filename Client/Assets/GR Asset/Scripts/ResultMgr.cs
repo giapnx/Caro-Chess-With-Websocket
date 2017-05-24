@@ -21,5 +21,7 @@ public class ResultMgr : MonoBehaviour {
 		OutgoingExitGameMessage outMsg = new OutgoingExitGameMessage (BoardGameInstance.gameId, BoardGameInstance.player);
 
 		SocketMgr.instance.Send (outMsg);
+
+		UIManager.Instance.ShowPage ("MainMenuPanel");
 	}
 }
