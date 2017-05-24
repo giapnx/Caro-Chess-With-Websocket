@@ -23,4 +23,7 @@ public class Strings {
 
 	// message
 	public const string EXIT_MSG 	= "The opponent has left the game. Press the OK button to return to MainMenu";
+	public const string CREATE_FAIL_MSG 	= "Can not create more rooms.\nPlease join in an available room";
+	public const string JOIN_FAIL_MSG 	= "Currently no room available.\nPlease create a new room or try to find it again";
+
 }

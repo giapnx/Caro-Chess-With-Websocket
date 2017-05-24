@@ -54,24 +54,42 @@ public class SocketMgr : MonoBehaviour {
 					break;
 
 				case GR_MessageType.CREATE_ROOM:
+					
+					if (incomingMessage.status != Strings.CREATE_FAIL)
+					{
+						BoardGameInstance.gameId = incomingMessage.gameId;
+						BoardGameInstance.player = incomingMessage.player;
+						if (BoardGameInstance.player == Player.X)
+							BoardGameInstance.opponent = Player.O;
+						else
+							BoardGameInstance.opponent = Player.X;
 
-					BoardGameInstance.gameId = incomingMessage.gameId;
-					BoardGameInstance.player = incomingMessage.player;
+						RoomInfoInstance.SetPlayerLetter ();
+						RoomInfoInstance.SetStatusPlayer (incomingMessage.score);
 
-					RoomInfoInstance.SetPlayerLetter ();
-					RoomInfoInstance.SetStatusPlayer (incomingMessage.score);
-					RoomInfoInstance.SetGameRoom (incomingMessage.gameName);
+						RoomInfoInstance.SetOppoLetter ();
+						RoomInfoInstance.SetStatusOpponent (incomingMessage.score);
 
+						RoomInfoInstance.SetGameRoom (incomingMessage.gameName);
+						BoardGameInstance.ResetBoardGame ();
 
-					UIManager.Instance.ShowPage ("PlayPanel");
-//					RoomInfoInstance.SetStatusOpponent (incomingMessage.score);
+						UIManager.Instance.ShowPage ("PlayPanel");
+//						RoomInfoInstance.SetStatusOpponent (incomingMessage.score);
+					}
+					else
+					{
+						NotificationPanel.instance.SetTextNotification (Strings.CREATE_FAIL_MSG);
+
+						UIManager.Instance.ShowPage ("NotifycationPanel");
+					}
+
 					break;
 
 				case GR_MessageType.LIST_ROOM:
 
 					if(incomingMessage.rooms.Count == 0)
 					{
-//						NotificationPanel.instance.SetTextNotification (incomingMessage.message);
+						NotificationPanel.instance.SetTextNotification (Strings.JOIN_FAIL_MSG);
 
 						UIManager.Instance.ShowPage ("NotifycationPanel");
 
@@ -89,7 +107,7 @@ public class SocketMgr : MonoBehaviour {
 
 					if (incomingMessage.status == Strings.JOIN_FAIL) 
 					{
-						NotificationPanel.instance.SetTextNotification (incomingMessage.message);
+						NotificationPanel.instance.SetTextNotification (Strings.JOIN_FAIL_MSG);
 						UIManager.Instance.ShowPage ("NotifycationPanel");
 					}
 					else
@@ -97,13 +115,15 @@ public class SocketMgr : MonoBehaviour {
 						BoardGameInstance.gameId = incomingMessage.gameId;
 						BoardGameInstance.player = incomingMessage.player;
 						BoardGameInstance.opponent = incomingMessage.opponent;
-						RoomInfoInstance.SetGameRoom (incomingMessage.gameName);
 
 						RoomInfoInstance.SetPlayerLetter ();
 						RoomInfoInstance.SetStatusPlayer (incomingMessage.score);
 
 						RoomInfoInstance.SetOppoLetter ();
 						RoomInfoInstance.SetStatusOpponent (incomingMessage.score);
+
+						RoomInfoInstance.SetGameRoom (incomingMessage.gameName);
+						BoardGameInstance.ResetBoardGame ();
 
 						UIManager.Instance.ShowPage ("PlayPanel");
 					}
