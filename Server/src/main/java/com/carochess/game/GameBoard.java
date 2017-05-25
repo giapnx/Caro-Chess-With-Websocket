@@ -1,5 +1,6 @@
 package com.carochess.game;
 
+import com.carochess.common.Configs;
 import com.carochess.game.Game.PlayerLetter;
 
 /**
@@ -8,8 +9,8 @@ import com.carochess.game.Game.PlayerLetter;
  */
 public class GameBoard {
 	
-	public static final int MAX_ROW = 15;
-	public static final int MAX_COL = 17;
+	int MAX_ROW = Configs.MAX_ROW;
+	int MAX_COL = Configs.MAX_COL;
 	
 	PlayerLetter[][] cells = new PlayerLetter[MAX_ROW][MAX_COL];
 	

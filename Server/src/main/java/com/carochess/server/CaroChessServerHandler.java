@@ -30,12 +30,13 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.util.CharsetUtil;
 
+import com.carochess.common.Configs;
 import com.carochess.common.RoomNode;
 import com.carochess.common.Strings;
 import com.carochess.game.Game;
 import com.carochess.game.Player;
 import com.carochess.game.Game.PlayerLetter;
-import com.carochess.server.message.GameOverMessageBean;
+import com.carochess.server.message.OutgoingGameOverMessageBean;
 import com.carochess.server.message.HandshakeMessageBean;
 import com.carochess.server.message.IncomingCreateRoomMessageBean;
 import com.carochess.server.message.IncomingTurnResponseMessageBean;
@@ -43,7 +44,7 @@ import com.carochess.server.message.MessageType;
 import com.carochess.server.message.OutgoingCreateRoomMessageBean;
 import com.carochess.server.message.OutgoingTurnResponseMessageBean;
 import com.carochess.server.message.OutgoingRoomListMessageBean;
-import com.carochess.server.message.TurnMessageBean;
+import com.carochess.server.message.OutgoingTurnMessageBean;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -61,7 +62,6 @@ public class CaroChessServerHandler extends SimpleChannelUpstreamHandler {
 
 	private static final String WEBSOCKET_PATH = "/websocket";
 	
-	private static final int MAX_WAITING_ROOM = 20;
 	public static int current_waiting_room = 0;
         
     private WebSocketServerHandshaker handshaker;
@@ -178,7 +178,7 @@ public class CaroChessServerHandler extends SimpleChannelUpstreamHandler {
     	switch (type) {
 		case MessageType.CREATE_ROOM:
 
-			if(current_waiting_room < MAX_WAITING_ROOM)
+			if(current_waiting_room < Configs.MAX_WAITING_ROOM)
 			{
 				IncomingCreateRoomMessageBean message = gson.fromJson(((BinaryWebSocketFrame) frame).getBinaryData().toString(CharsetUtil.UTF_8), IncomingCreateRoomMessageBean.class);
 				System.out.println("GameRoom: " + message.getRoom_name());
@@ -241,8 +241,8 @@ public class CaroChessServerHandler extends SimpleChannelUpstreamHandler {
 			
 			// If the game has begun we need to inform the players. Send them a "turn" message (either "waiting" or "your_turn")
 			if (game_join.getStatus() == Game.Status.IN_PROGRESS) {			
-				game_join.getFirstPlayer().getChannel().write(new TextWebSocketFrame(new TurnMessageBean(Strings.YOUR_TURN).toJson()));
-				game_join.getSecondPlayer().getChannel().write(new TextWebSocketFrame(new TurnMessageBean(Strings.WAITING).toJson()));
+				game_join.getFirstPlayer().getChannel().write(new TextWebSocketFrame(new OutgoingTurnMessageBean(Strings.YOUR_TURN).toJson()));
+				game_join.getSecondPlayer().getChannel().write(new TextWebSocketFrame(new OutgoingTurnMessageBean(Strings.WAITING).toJson()));
 			}
 			
 			current_waiting_room--;
@@ -282,8 +282,8 @@ public class CaroChessServerHandler extends SimpleChannelUpstreamHandler {
 				
 				// If the game has begun we need to inform the players. Send them a "turn" message (either "waiting" or "your_turn")
 				if (quick_game_join.getStatus() == Game.Status.IN_PROGRESS) {
-					quick_game_join.getFirstPlayer().getChannel().write(new TextWebSocketFrame(new TurnMessageBean(Strings.YOUR_TURN).toJson()));
-					quick_game_join.getSecondPlayer().getChannel().write(new TextWebSocketFrame(new TurnMessageBean(Strings.WAITING).toJson()));
+					quick_game_join.getFirstPlayer().getChannel().write(new TextWebSocketFrame(new OutgoingTurnMessageBean(Strings.YOUR_TURN).toJson()));
+					quick_game_join.getSecondPlayer().getChannel().write(new TextWebSocketFrame(new OutgoingTurnMessageBean(Strings.WAITING).toJson()));
 				}
 				current_waiting_room--;
 			}
@@ -320,14 +320,14 @@ public class CaroChessServerHandler extends SimpleChannelUpstreamHandler {
 			if (winner) {
 //				System.out.println("Win...............");
 				game.incrementScoreOf(PlayerLetter.valueOf(turn_response_message.getPlayer()));
-				player.getChannel().write(new TextWebSocketFrame(new GameOverMessageBean(Strings.YOU_WIN, game.getScoreOf(PlayerLetter.valueOf(turn_response_message.getPlayer()))).toJson()));
-				opponent.getChannel().write(new TextWebSocketFrame(new GameOverMessageBean(Strings.YOU_LOSE, game.getScoreOf(PlayerLetter.valueOf(turn_response_message.getPlayer()))).toJson()));
+				player.getChannel().write(new TextWebSocketFrame(new OutgoingGameOverMessageBean(Strings.YOU_WIN, game.getScoreOf(PlayerLetter.valueOf(turn_response_message.getPlayer()))).toJson()));
+				opponent.getChannel().write(new TextWebSocketFrame(new OutgoingGameOverMessageBean(Strings.YOU_LOSE, game.getScoreOf(PlayerLetter.valueOf(turn_response_message.getPlayer()))).toJson()));
 				
 				// Reset status and board game, start a new game
 				game.resetGame();
 				
 			} else if (tied) {
-				player.getChannel().write(new TextWebSocketFrame(new GameOverMessageBean(Strings.TIED).toJson()));
+				player.getChannel().write(new TextWebSocketFrame(new OutgoingGameOverMessageBean(Strings.TIED).toJson()));
 			}
 			
 			break;
