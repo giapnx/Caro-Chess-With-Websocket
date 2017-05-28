@@ -4,7 +4,7 @@ package com.carochess.server.message;
  * Represents incoming message from the user
  * @author lukasz madon
  */
-public class IncomingTurnResponseMessageBean {
+public class IncomingTurnResponseMessageBean extends MessageBean {
 	
     private int gameId;
 	private String player;

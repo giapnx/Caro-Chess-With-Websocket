@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import javax.enterprise.inject.New;
-import javax.persistence.criteria.CriteriaBuilder.Case;
-
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -20,7 +17,7 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.channel.group.ChannelGroup;
+//import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -65,7 +62,7 @@ public class CaroChessServerHandler extends SimpleChannelUpstreamHandler {
 	public static int current_waiting_room = 0;
         
     private WebSocketServerHandshaker handshaker;
-    private static ChannelGroup playerGroup;
+//    private static ChannelGroup playerGroup;
 
 	/* (non-Javadoc)
 	 * 
