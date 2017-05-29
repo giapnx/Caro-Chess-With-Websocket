@@ -335,9 +335,12 @@ public class CaroChessServerHandler extends SimpleChannelUpstreamHandler {
 			// Find other Player in game and notify
 			Player opponentPlayer = games.get(exit_message.getGameId()).getOpponent(exit_message.getPlayer());
 			
-			MessageBean msg = new MessageBean();
-			msg.type = MessageType.EXIT_GAME;
-			opponentPlayer.getChannel().write(new TextWebSocketFrame(msg.toJson()));
+			if (games.get(exit_message.getGameId()).getPlayers().size() == 2)
+			{
+				MessageBean msg = new MessageBean();
+				msg.type = MessageType.EXIT_GAME;
+				opponentPlayer.getChannel().write(new TextWebSocketFrame(msg.toJson()));
+			}
 			
 			// Deleta this game
 			games.remove(exit_message.getGameId());
