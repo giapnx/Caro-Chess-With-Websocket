@@ -52,9 +52,9 @@
 			      <version>1.0.0</version>
 			      <configuration>
 			        <appName>${heroku.appName}</appName>
-			        <processTypes>
-					     <web>java $JAVA_OPTS -cp target/ com.carochess.server.CaroChessServer main</web>
-					</processTypes>
+			        <!-- <processTypes>
+					     <web>java $JAVA_OPTS -cp target/classes:target/dependency/* com.carochess.server.CaroChessServer</web>
+					</processTypes> -->
 			      </configuration>
 		    </plugin>
             <plugin>
